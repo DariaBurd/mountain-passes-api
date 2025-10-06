@@ -58,6 +58,64 @@ async def submit_data(data: MountainPassData):
         )
 
 
+@app.get("/submitData/{pass_id}")
+async def get_pass_by_id(pass_id: int):
+    try:
+        pass_data = db.get_pass_by_id(pass_id)
+        if not pass_data:
+            raise HTTPException(
+                status_code=404,
+                detail="Перевал не найден"
+            )
+
+        return {
+            "status": 200,
+            "data": pass_data
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Ошибка при получении данных: {str(e)}"
+        )
+
+
+@app.patch("/submitData/{pass_id}")
+async def update_pass(pass_id: int, data: MountainPassData):
+    try:
+        success, message = db.update_mountain_pass(pass_id, data.dict())
+
+        return {
+            "state": 1 if success else 0,
+            "message": message
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Ошибка при обновлении данных: {str(e)}"
+        )
+
+
+@app.get("/submitData/")
+async def get_passes_by_user_email(user__email: str):
+    try:
+        passes = db.get_passes_by_user_email(user__email)
+
+        return {
+            "status": 200,
+            "data": passes,
+            "count": len(passes)
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Ошибка при получении данных: {str(e)}"
+        )
+
 if __name__ == "__main__":
     import uvicorn
 
