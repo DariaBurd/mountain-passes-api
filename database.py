@@ -17,6 +17,8 @@ class DatabaseManager:
         }
 
     def get_connection(self):
+        if os.environ.get('DATABASE_URL'):
+            return psycopg2.connect(os.environ.get('DATABASE_URL'))
         return psycopg2.connect(**self.db_params)
 
     def add_mountain_pass(self, data):
