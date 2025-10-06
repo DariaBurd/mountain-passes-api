@@ -2,6 +2,19 @@ import psycopg2
 import os
 from dotenv import load_dotenv
 
+import os
+
+def get_db_connection():
+    if os.environ.get('DATABASE_URL'):
+        return psycopg2.connect(os.environ.get('DATABASE_URL'))
+    return psycopg2.connect(
+        host=os.environ.get('FSTR_DB_HOST', 'localhost'),
+        port=os.environ.get('FSTR_DB_PORT', '5432'),
+        database='postgres',
+        user=os.environ.get('FSTR_DB_LOGIN', 'postgres'),
+        password=os.environ.get('FSTR_DB_PASS', 'password')
+    )
+
 load_dotenv()
 
 

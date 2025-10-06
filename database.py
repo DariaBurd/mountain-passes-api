@@ -8,18 +8,21 @@ load_dotenv()
 
 class DatabaseManager:
     def __init__(self):
-        self.db_params = {
-            'host': os.environ.get('FSTR_DB_HOST', 'localhost'),
-            'port': os.environ.get('FSTR_DB_PORT', '5432'),
-            'database': os.environ.get('FSTR_DB_DATABASE', 'mountain_passes'),
-            'user': os.environ.get('FSTR_DB_LOGIN', 'postgres'),
-            'password': os.environ.get('FSTR_DB_PASS', 'password')
-        }
+        self.database_url = os.environ.get('DATABASE_URL')
+        if not self.database_url:
+            self.db_params = {
+                'host': os.environ.get('FSTR_DB_HOST', 'localhost'),
+                'port': os.environ.get('FSTR_DB_PORT', '5432'),
+                'database': os.environ.get('FSTR_DB_DATABASE', 'mountain_passes'),
+                'user': os.environ.get('FSTR_DB_LOGIN', 'postgres'),
+                'password': os.environ.get('FSTR_DB_PASS', 'password')
+            }
 
     def get_connection(self):
-        if os.environ.get('DATABASE_URL'):
-            return psycopg2.connect(os.environ.get('DATABASE_URL'))
-        return psycopg2.connect(**self.db_params)
+        if self.database_url:
+            return psycopg2.connect(self.database_url)
+        else:
+            return psycopg2.connect(**self.db_params)
 
     def add_mountain_pass(self, data):
         conn = self.get_connection()
